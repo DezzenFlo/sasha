@@ -12,7 +12,7 @@ secondt = now.second
 
 
 #a= int(input(": "))
-b= int(input("Через сколько вы хотите встать(в секундах): "))
+b= int(input("Через сколько вы хотите встать(в минутах): "))
 
 min = b * 60
 time.sleep(min)
