@@ -12,9 +12,9 @@ import pyperclip
 import keyboard
 import win32com.client
 
-import time/timer
-import time/alarm_clock
-import Parser/weather
+import timer
+import alarm_clock
+import weather
 
 # слова Саши ----------------------------------------------------------------------------------------------------------------------
 
