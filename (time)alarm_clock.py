@@ -1,7 +1,7 @@
 import datetime
 import time
 import winsound
-def(alarm):
+def alarm():
     now = datetime.datetime.now()
 
     hour = int("%d" % now.hour)
