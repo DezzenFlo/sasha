@@ -1,22 +1,21 @@
 import os
 import sys
 import time
-import speech_recognition as sr
-from fuzzywuzzy import fuzz
 import webbrowser 
-import pyttsx3
 import datetime
-from pydub import AudioSegment
-from pydub.playback import play
-import pyperclip
+#from pydub import AudioSegment
+#from pydub.playback import play
+#import pyperclip
 import keyboard
-import win32com.client
-from tkinter import * 
-from tkinter import messagebox
-from tkinter import Entry, Label,Tk
+#import win32com.client
+#from tkinter import * 
+#from tkinter import messagebox
+#from tkinter import Entry, Label,Tk
 import psutil
 import pyautogui
+from pyautogui import press, typewrite, hotkey
 import random
+
 
 import time_timer
 import time_alarm_clock
@@ -24,20 +23,22 @@ import parser_weather
 import computer_off
 import vk
 import time_time_now
+import socket
 
 
 
 # слова Саши ----------------------------------------------------------------------------------------------------------------------
+"""
+song_da            = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster_2\\Voice of Lera\\Да.wav')
+song_ay_ne_ponayla = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster_2\\Voice of Lera\\Повторите.wav')
+song_govorite      = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster_2\\Voice of Lera\\Слушаю.wav')
+song_odnu_minutku  = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster_2\\Voice of Lera\\Сечас.wav')
+song_net           = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster_2\\Voice of Lera\\Нет.wav')
+song_vi_skazali    = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster_2\\Voice of Lera\\Вы сказали.wav')
+song_net_ne_mogu   = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster_2\\Voice of Lera\\Нет не могу.wav')
+song_nu_poprobuy   = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster_2\\Voice of Lera\\Ну попробуй.wav')
+song_odnu_minutku_1= AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster_2\\Voice of Lera\\Открываю.wav')
 
-song_da            = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster\\Голос Саши\\Да.wav')
-song_ay_ne_ponayla = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster\\Голос Саши\\Я вас не поняла.wav')
-song_govorite      = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster\\Голос Саши\\Говорите.wav')
-song_odnu_minutku  = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster\\Голос Саши\\Одну минутку.wav')
-song_net           = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster\\Голос Саши\\Нет.wav')
-song_vi_skazali    = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster\\Голос Саши\\Вы сказали.wav')
-song_net_ne_mogu   = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster\\Голос Саши\\Нет не могу.wav')
-song_nu_poprobuy   = AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster\\Голос Саши\\Ну попробуй.wav')
-song_odnu_minutku_1= AudioSegment.from_wav('C:\\Users\\Nikita\\Desktop\\sashamaster\\Голос Саши\\Одну минутку_1.wav')
 
 # графический интерфейс------------------------------------------------------------------------------------------------------------
 
@@ -107,21 +108,52 @@ btn2.grid(row=2, column=0)
 btn4.grid(row=3, column=0)
 btn5.grid(row=4, column=0)
 
-
+"""
 
 
 # настройки------------------------------------------------------------------------------------------------------------------------
 
 
+ 
+# запуск
 
-opts = {
-    "alias": ('саша', 'сашуля', 'александра', 'саня', 'санёк', 'санек', 'сашуль', 'саш'),
-    "tbr"  : ('скажи','расскажи','покажи','сколько','произнеси', 'включи', 'открой', 'создай'),
+
+
+	
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Bind the socket to the port
+server_address = ('192.168.0.103', 10000)
+print(sys.stderr, 'starting up on %s port %s' % server_address)
+sock.bind(server_address)
+
+# Listen for incoming connections
+sock.listen(1)
+
+while True:
+    # Wait for a connection
+	print(sys.stderr, 'waiting for a connection')
+	connection, client_address = sock.accept()
+    
+	print(sys.stderr, 'connection from', client_address)
+
+        # Receive the data in small chunks and retransmit it
+    
+	data = connection.recv(1024)
+            #print(sys.stderr, 'received "%s"' % data)
+
+            #sata = data.encode("utf-8")
+	sata = data.decode('utf-8')
+	print(sata)
+	#os.system(sata)
+	opts = {
+    "alias": ('Саша', 'сашуля', 'александра', 'саня', 'санёк', 'Санек', 'сашуль', 'саша'),
+    "tbr"  : ('скажи','расскажи','покажи','сколько','произнеси', 'включи', 'открой', 'создай','поставь', 'на'),
     "cmds": {
         "ctime"       : ('текущее время', 'сейчас времени', 'который час', 'времени', 'время'),
         "radio"       : ('музыку', 'музыка'),
         "stupid1"     : ('расскажи анекдот', 'рассмеши меня', 'ты знаешь анекдоты'),
-        "youtube"     : ('ютуб', 'видео', 'любое видео', 'youtube'),
+        "YouTube"     : ('ютуб', 'видео', 'любое видео', 'YouTube'),
         "vk"          : ('вк', 'в контакте', 'вконтакте', 'vk'),
         "serials"     : ('сериал', 'фансиреалс', 'фан сиреалс', 'фансериалс', 'фан ссериалс'),
         "kino"        : ('кино', 'киного', 'кино го', 'кино go', 'kinogo', 'kino go'),
@@ -138,9 +170,9 @@ opts = {
         "photoshop"   : ('фотошоп', 'photoshop', 'фото редактор', 'фото redactor', 'photo redactor', 'photoredactor'),
         "megashop"    : ('куфар', 'рынок', 'место для барыг', 'беларусский авито', 'беларусский avito'),
         "github"      : ('git hub', 'github', 'гитхаб', 'гит хаб'),
-        "aliexpress"  : ('алиэкспрес', 'алиэкспресс' 'алиекспрес', 'алиекспрэс', 'алиэкспрэс', 'али', 'ali', 'aliexpress', 'дом китайцев'),
+        "АлиЭкспресс"  : ('алиэкспрес', 'АлиЭкспресс', 'алиекспрес', 'алиекспрэс', 'алиэкспрэс', 'али', 'ali', 'AliExpress', 'дом китайцев'),
         "repit"       : ('повтори за мной', 'повтори за мною', 'повтори', 'повторяй', 'повторяй за мной'),
-        "off"         : ('выключи','выключи компьютер','офни','офни пк','пк на минус','оф', 'ебало на 0'),
+        "выключи компьютер"         : ('выключи','выключи компьютер','офни','офни пк','пк на минус','оф', 'ебало на 0'),
         "programs"    : (),
         "photoshop"   : (),
         "sublime"     : (),
@@ -152,437 +184,142 @@ opts = {
     	"kill"        : ('прогармму'),
     	"stone"       : ('давай поиграем в игру')
 
-
-
-
-        
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-        #"":(),
-
-    }
-}
+	    }
+	}
 # переменные которыми буду пользоваться в функциях
 
 
  
 # функции
-def speak(what):
-    print( what )
-    speak_engine.say( what )
-    speak_engine.runAndWait()
-    speak_engine.stop()
- 
-def callback(recognizer, audio):
-	try:
-		voice = recognizer.recognize_google(audio, language = "ru-RU").lower()
-		T.insert(INSERT, "\n[ Admin ] ==> " + voice)
-		
 
-		if voice.startswith(opts["alias"]):
+ 
+
+
             # обращаются к Саше
-			cmd = voice
+	cmd = sata
 
-			for x in opts['alias']:
-				cmd = cmd.replace(x, "").strip()
+	for x in opts['alias']:
+		cmd = cmd.replace(x, "").strip()
 
-			for x in opts['tbr']:
-				cmd = cmd.replace(x, "").strip()
+	for x in opts['tbr']:
+		cmd = cmd.replace(x, "").strip()
 
-            # распознаем и выполняем команду
-			cmd = recognize_cmd(cmd)
-			execute_cmd(cmd['cmd'])
+	            # распознаем и выполняем команду
 
 
 
- 
-	except sr.UnknownValueError:
-		T.insert(INSERT, "\n[ Sasha ] ==> Голос не распознан!")
 
-	except sr.RequestError as e:
-		T.insert(INSERT, "\n[ Sasha ] ==> Неизвестная ошибка, проверьте интернет!")	
 
- 
-def recognize_cmd(cmd):
-    RC = {'cmd': '', 'percent': 0}
-    for c,v in opts['cmds'].items():
- 
-        for x in v:
-            vrt = fuzz.ratio(cmd, x)
-            if vrt > RC['percent']:
-                RC['cmd'] = c
-                RC['percent'] = vrt
+	 
+	 
 
-    return RC
- 
-def execute_cmd(cmd):
+	 
+
 	if cmd == 'ctime':
-		# сказать текущее время
+			# сказать текущее время
 		time_time_now.time_now()
 
-		
+	#if cmd == 'пауза' or 'паузу':
+			# сказать текущее время
+		#press('space')
+
+
+	name_1="Максиму" or "максиму"
+	name_2="Ване"    or "ване"
+	name_3="Никите"  or "никите"
+	name_4="Коле"    or "коле"
+	name_5="Толику"  or "толику"
+	name_6="маме"    or "Маме"
+	name_7="Лере"    or "лере"
+	if cmd == " напиши " + name_1 + " сообщение":
+		os.system("mspaint")
+
+
+
+
+			
 	if cmd == 'radio':
-		# воспроизвести музыку
+			# воспроизвести музыку
 		play(song_odnu_minutku)
 		os.system("C:\\Users\\Nikita\\Desktop\\fall_out_boy_-_immortals.mp3")
 
-	elif cmd == 'stupid1':
-		# рассказать анекдот
+	if cmd == 'stupid1':
+			# рассказать анекдот
 		speak("[***] Мой разработчик не научил меня анекдотам ... Ха ха ха")
-	
-	elif cmd == 'youtube':
-		# открыть ютуб
-		play(song_odnu_minutku)
+		
+	if cmd == 'YouTube':
+			# открыть ютуб
+		
+		#print("do")
 		url = 'https://www.youtube.com'
 		webbrowser.open(url)
+		#print("posle")
 
-	elif cmd == 'vk':
-		# открыть вконтакте
-		play(song_odnu_minutku)
+	if cmd == 'vk':
+			# открыть вконтакте
+		#play(song_odnu_minutku)
 		url = 'https://vk.com/feed'
 		webbrowser.open(url)
 
-	elif cmd == 'serials':
-		# открыть сайт с сериалами 
-		play(song_odnu_minutku)
+	if cmd == 'сериал':
+			# открыть сайт с сериалами 
+		#play(song_odnu_minutku)
 		url = 'http://fanserials.tv'
 		webbrowser.open(url)
-	
-	elif cmd == 'kino':
-		# открыть сайт с кино
-		play(song_odnu_minutku)
+		
+	if cmd == 'кино':
+			# открыть сайт с кино
+		#play(song_odnu_minutku)
 		url = 'https://kinogo.by'
 		webbrowser.open(url)
-	
-	elif cmd == 'elctroshop':
-		# открыть сайт електротехники
-		play(song_odnu_minutku)
+		
+	if cmd == 'zeon':
+			# открыть сайт електротехники
+		#play(song_odnu_minutku)
 		url = 'https://www.777555.by'
 		webbrowser.open(url)
-	
-	elif cmd == 'aliexpress':
-		# открыть алиэкспресс
-		play(song_odnu_minutku)
+		
+	if cmd == 'АлиЭкспресс':
+			# открыть алиэкспресс
+		#play(song_odnu_minutku)
+		
 		url = 'https://ru.aliexpress.com/?src=yandex&albch=search&acnt=7443951&isdl=y&aff_short_key=UneMJZVf&yclid=4096793462919695618'
 		webbrowser.open(url)
-	
-	elif cmd == 'max':
-
-		play(song_govorite)
-		
-		r = sr.Recognizer()
-
-		with sr.Microphone() as source:
-			
-
-			r.pause_threshold = 1
-			r.adjust_for_ambient_noise(source, duration = 1)
-			audio = r.listen(source)
-
-		try:
-
-			zadanie = r.recognize_google(audio, language="ru-RU").lower()
-						
-			url = 'https://vk.com/im?sel=222215016'
-			webbrowser.open(url)
-			print(zadanie)
-			pyperclip.copy(zadanie)
-
-			shell = win32com.client.Dispatch("WScript.Shell")
-			time.sleep(7)
-			pyautogui.click(766, 1046,duration=1)
-			time.sleep(3)
-			shell.SendKeys("^V")
-			time.sleep(3)
-			shell.SendKeys("{ENTER}")
 
 
-
-
-		except sr.UnknownValueError:
-			play(song_ay_ne_ponayla)
-			zadanie = command()
-		return zadanie
-
-		my_file.write(zadanie)
-
-
-		url = 'https://vk.com/im?peers=c29_c12_349445941&sel=229541795'
-		webbrowser.open(url)
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-	elif cmd == 'programs':
-		play(song_odnu_minutku)
-
-
-	elif cmd == 'timer':
+	if cmd == 'timer':
 		time_timer.timerr()
 
-	elif cmd == 'weather':
-		play(song_odnu_minutku_1)
+	if cmd == 'weather':
+		#play(song_odnu_minutku_1)
 		parser_weather.weather_parse()
-	elif cmd == 'stone':
-		a_1 = ('''
-                        _    ,-,    _
-                 ,--, /: :\/': :`\/: :\
-                |`;  ' `,'   `.;    `: |
-                |    |     |  '  |     |.
-                | :  |     | pb  |     ||
-                | :. |  :  |  :  |  :  | \
-                 \__/: :.. : :.. | :.. |  )
-                      `---',\___/,\___/ /'
-                           `==._ .. . /'
-                                `-::-'
 
-			''')
-
-		a_2 = ('''
-
-		                $$$$_________$$$$
-		________________$$$$$________$$$$$
-		_________________$$$$$_______$$$$$
-		___________$$$____$$$$$______$$$$$
-		___________$$$$____$$$$$_____$$$$$
-		___________$$$$$____$$$$$____$$$$$
-		____________$$$$$____$$$$$___$$$$$$___________$$$
-		_____________$$$$$___$$$$$$__$$$$$$_________$$$$$
-		_____________$$$$$$___$$$$$$_$$$$$$________$$$$$$
-		___$$$$_______$$$$$$__$$$$$$__$$$$$$_______$$$$$$
-		____$$$$_______$$$$$$__$$$$$$$$$$$$$_______$$$$$$
-		_____$$$$$______$$$$$$$$$$$$$$$$$$$$$_____$$$$$$
-		_______$$$$$_____$$$$$$$$$$$$$$$$$$$$$____$$$$$$
-		________$$$$$$$___$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		__________$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		____________$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		______________$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		_______________$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		________________$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		_________________$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		__________________$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		___________________$$$$$$$$$$$$$$$$$$$$$$$$$
-		_____________________$$$$$$$$$$$$$$$$$$$$$$
-		______________________$$$$$$$$$$$$$$$$$$$
-		________________________$$$$$$$$$$$$$$
-
-			''')
-
-
-		while(True):
-			
-				
-			r = sr.Recognizer()
-			with sr.Microphone(device_index = 1) as source:
-					
-				r.adjust_for_ambient_noise(source)
-				audio = r.listen(source)
-			try:
-
-				a = int(r.recognize_google(audio, language="ru-RU").lower())
-					
-			
-
-
-
-
-			except sr.UnknownValueError:
-				play(song_ay_ne_ponayla)
-				a = command()
-			
-
-
-			print('''Введите ваш предмет:
-
-						1. Камень
-						2. Ножницы
-						3. Бумага
-						4. Конец
-
-				''')
-
-
-
-			b = random.randint(1, 3)
-			print(b)
-
-
-			if a == 'камень' and b == 1:
-				print("Камень == Камень")
-				print("")
-				print("Ничья")
-				print("")
-			
-			if a =='камень' and b == 2:
-				print("Камень == Ножницы")
-				print("")
-				print("Ты победил!")
-				print("")
-
-			if a == 'камень' and b == 3:
-				print("Камень == Бумага")
-				print("")
-				print("Ты проиграл!")	
-				print("")	
-
-			if a == 'ножницы' and b == 1:
-				print("Ножницы == Камень")
-				print("")
-				print("Ты проиграл!")	
-				print("")
-
-			if a == 'ножницы' and b == 2:
-				print("Ножницы == Ножницы")
-				print("")
-				print("Ничья")	
-				print("")
-
-			if a == 'ножницы' and b == 3:
-				print("Ножницы == Бумага")
-				print("")
-				print("Ты победил!")	
-				print("")
-
-			if a == 'бумага' and b == 1:
-				print("Бумага == Камень")
-				print("")
-				print("Ты победил!")	
-				print("")
-
-			if a == 'бумага' and b == 2:
-				print("Бумага == Ножницы")
-				print("")
-				print("Ты проиграл!")	
-				print("")
-
-			if a == 'бумага' and b == 3:
-				print("Бумага == Бумага")
-				print("")
-				print("Ничья")	
-				print("")
-
-			if a == 'конец':
-				break
-
-
-
-
-
-
-		
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	elif cmd == 'github':
-		# открыть гитхаб
-		play(song_odnu_minutku)
+	if cmd == 'гитхаб':
+			# открыть гитхаб
+		#play(song_odnu_minutku)
 		url = 'https://github.com/'
 		webbrowser.open(url)
-	
+		
 
 
 	if cmd == 'photoshop':
-		play(song_odnu_minutku)
+		#play(song_odnu_minutku)
 		os.startfile('C:\\Program Files\\Adobe\\Adobe Photoshop CS6 (x64)\\Photoshop.exe')
-	
-	if cmd == 'off':
-		computer_off.off()
+		
+	if cmd == 'выключи компьютер':
+		os.system("shutdown -s")
 
+	if cmd == 'отмотай':
+		press('left')
 
-	
+	if cmd == 'перемотай':
+		press('right')
 
- 
-# запуск
-	
-r = sr.Recognizer()
-m = sr.Microphone(device_index = 1)
- 
-with m as source:
-	r.adjust_for_ambient_noise(source)
- 
-speak_engine = pyttsx3.init()
+	if cmd == 'паузу':
+			# сказать текущее время
+		press('space')
+		
 
-stop_listening = r.listen_in_background(m, callback)
-root.mainloop()
-while(True):
-	time.sleep(0.1)
-while(True):
-	execute_cmd()
-	
 
 
 
